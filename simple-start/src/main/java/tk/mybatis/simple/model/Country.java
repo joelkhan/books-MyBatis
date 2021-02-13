@@ -1,5 +1,6 @@
 package tk.mybatis.simple.model;
 
+/* 数据值对象 */
 public class Country {
 	private Long id;
 	private String countryname;

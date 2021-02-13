@@ -5,10 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * MyBatis遵循“下划线转驼峰”的命名方式
  * 用户表
  */
 public class SysUser implements Serializable {
 	private static final long serialVersionUID = -328602757171077630L;
+	
+	/* 注意：在实体类的字段中，不要使用基本类型！ */
+	
 	/**
 	 * 用户ID
 	 */

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-					"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="tk.mybatis.simple.mapper.UserMapper">
 	<cache/>
 	<!-- <cache-ref namespace="tk.mybatis.simple.mapper.RoleMapper"/> -->
@@ -55,7 +55,8 @@
 					select="tk.mybatis.simple.mapper.RoleMapper.selectRoleByUserId"
 					column="{userId=id}"/>
 	</resultMap>
-	 
+	
+	<!-- 标签id和接口方法名一致 -->
 	<select id="selectById" resultMap="userMap">
 		select * from sys_user where id = #{id}
 	</select>
@@ -114,19 +115,22 @@
 	
 	<insert id="insert">
 		insert into sys_user(
-			user_name, user_password, user_email, 
-			user_info, head_img, create_time)
+			user_name, user_password, user_email, user_info, head_img, create_time)
 		values(
-			#{userName}, #{userPassword}, #{userEmail}, 
-			#{userInfo}, #{headImg, jdbcType=BLOB}, #{createTime, jdbcType=TIMESTAMP})
+			#{userName}, #{userPassword}, #{userEmail}, #{userInfo}, 
+			#{headImg, jdbcType=BLOB}, #{createTime, jdbcType=TIMESTAMP})
 	</insert>
 	
+	<!-- 仅适用于“具备主键自增”功能的数据库，如MySQL，插入数据后可能需要得到自增的主键值，
+	     然后使用这个值进行一些其它操作。 -->
+	<!-- useGeneratedKeys设置为true，MyBatis使用JDBC的getGeneratedKeys方法取出由数据库内部生成的主键，
+	     然后将该值赋给keyProperty配置的id属性。 -->
 	<insert id="insert2" useGeneratedKeys="true" keyProperty="id">
 		insert into sys_user(
 			user_name, user_password, 
 			<if test="userEmail != null">
 				<if test="userEmail != ''">
-				user_email, 
+				    user_email, 
 				</if>
 			</if>
 			user_info, head_img, create_time)
@@ -134,12 +138,15 @@
 			#{userName}, #{userPassword}, 
 			<if test="userEmail != null">
 				<if test="userEmail != ''">
-				#{userEmail}, 
+				    #{userEmail}, 
 				</if>
 			</if>
 			#{userInfo}, #{headImg, jdbcType=BLOB}, #{createTime, jdbcType=TIMESTAMP})
 	</insert>
 	
+	
+	<!-- 既适用于“不提供主键自增”功能的库，如Oracle，参见“insertOracle”
+	     也适用于“具备主键自增”功能的库，如MySQL -->
 	<insert id="insert3">
 		insert into sys_user(
 			user_name, user_password, user_email, 
@@ -415,4 +422,6 @@
 	<delete id="deleteUserById" statementType="CALLABLE">
 	    {call delete_user_by_id(#{id, mode=IN})}
 	</delete>
+
 </mapper>
+

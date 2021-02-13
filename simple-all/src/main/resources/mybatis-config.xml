@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE configuration
-        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<settings>
 	    <setting name="logImpl" value="LOG4J"/>
 	    <setting name="cacheEnabled" value="true"/>
-	    <setting name="mapUnderscoreToCamelCase" value="true"/>
+	    <setting name="mapUnderscoreToCamelCase" value="true"/><!-- 开启下划线转驼峰 -->
 	    <setting name="aggressiveLazyLoading" value="false"/>
 	</settings>
     
@@ -34,9 +33,9 @@
             </transactionManager>
             <dataSource type="UNPOOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/mybatis"/>
+                <property name="url" value="jdbc:mysql://192.168.56.103:3306/BooksMybatis"/>
                 <property name="username" value="root"/>
-                <property name="password" value=""/>
+                <property name="password" value="xyz789"/>
             </dataSource>
         </environment>
     </environments>
@@ -44,6 +43,6 @@
     <mappers>
         <package name="tk.mybatis.simple.mapper"/>
     </mappers>
-    
-    
+
 </configuration>
+

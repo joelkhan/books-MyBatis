@@ -3,11 +3,11 @@
 	                    http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>tk.mybatis</groupId>
-	<artifactId>simple</artifactId>
+	<artifactId>books-mybatis-simple-all</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -92,7 +92,7 @@
 					</dependency>
 					<dependency>
 						<groupId>tk.mybatis</groupId>
-						<artifactId>simple</artifactId>
+						<artifactId>books-mybatis-simple-start</artifactId>
 						<version>0.0.1-SNAPSHOT</version>
 					</dependency>
 				</dependencies>

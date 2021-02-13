@@ -1,8 +1,8 @@
 package tk.mybatis.simple.type;
 
 public enum Enabled {
-	enabled(1), //启用
-	disabled(0);//禁用
+	enabled(1),   // 启用
+	disabled(0);  // 禁用
 	
 	private final int value;
 
@@ -14,3 +14,4 @@ public enum Enabled {
 		return value;
 	}
 }
+

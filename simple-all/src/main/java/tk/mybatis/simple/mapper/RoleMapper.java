@@ -16,14 +16,21 @@ import org.apache.ibatis.session.RowBounds;
 
 import tk.mybatis.simple.model.SysRole;
 
+/*
+ * RoleMapper接口主要演示了MyBatis注解方式的基本用法。
+ * 这种方式的优点是，对于需求比较简单的系统，效率较高。
+ * 缺点是，当 SQL 有变化时都需要重新编译代码，因此，一般情况下不建议使用注解方式。 
+ * */
 @CacheNamespaceRef(RoleMapper.class)
 public interface RoleMapper {
 	
-	@Select({"select id,role_name roleName, enabled, create_by createBy, create_time createTime",
-			 "from sys_role",
-			 "where id = #{id}"})
+	@Select({
+	  "select id, role_name roleName, enabled, create_by createBy, create_time createTime",
+		"from sys_role",
+		"where id = #{id}"})
 	SysRole selectById(Long id);
 	
+  // 对应XML中的 resultMap 元素
 	@Results(id = "roleResultMap", value = {
 		@Result(property = "id", column = "id", id = true),
 		@Result(property = "roleName", column = "role_name"),
@@ -31,35 +38,43 @@ public interface RoleMapper {
 		@Result(property = "createBy", column = "create_by"),
 		@Result(property = "createTime", column = "create_time")
 	})
-	@Select("select id,role_name, enabled, create_by, create_time from sys_role where id = #{id}")
+	@Select("select id, role_name, enabled, create_by, create_time from sys_role where id = #{id}")
 	SysRole selectById2(Long id);
 	
-	@ResultMap("roleResultMap")
+	@ResultMap("roleResultMap") // 引用了id为“roleResultMap”的@Results
 	@Select("select * from sys_role")
 	List<SysRole> selectAll();
 	
 	List<SysRole> selectAll(RowBounds rowBounds);
 	
-	@Insert({"insert into sys_role(id, role_name, enabled, create_by, create_time)", 
-			 "values(#{id}, #{roleName}, #{enabled}, #{createBy}, #{createTime, jdbcType=TIMESTAMP})"})
+	@Insert({
+	  "insert into sys_role(id, role_name, enabled, create_by, create_time)", 
+		"values(#{id}, #{roleName}, #{enabled}, #{createBy}, #{createTime, jdbcType=TIMESTAMP})"
+    })
 	int insert(SysRole sysRole);
 	
-	@Insert({"insert into sys_role(role_name, enabled, create_by, create_time)", 
-	"values(#{roleName}, #{enabled}, #{createBy}, #{createTime, jdbcType=TIMESTAMP})"})
+	@Insert({
+	  "insert into sys_role(role_name, enabled, create_by, create_time)", 
+    "values(#{roleName}, #{enabled}, #{createBy}, #{createTime, jdbcType=TIMESTAMP})"
+	  })
 	@Options(useGeneratedKeys = true, keyProperty = "id")
 	int insert2(SysRole sysRole);
 	
-	@Insert({"insert into sys_role(role_name, enabled, create_by, create_time)", 
-	 "values(#{roleName}, #{enabled}, #{createBy}, #{createTime, jdbcType=TIMESTAMP})"})
-	@SelectKey(statement = "SELECT LAST_INSERT_ID()", keyProperty = "id", resultType = Long.class, before = false)
+	@Insert({
+	  "insert into sys_role(role_name, enabled, create_by, create_time)", 
+    "values(#{roleName}, #{enabled}, #{createBy}, #{createTime, jdbcType=TIMESTAMP})"
+	  })
+	@SelectKey(statement = "SELECT LAST_INSERT_ID()", 
+	  keyProperty = "id", 
+	  resultType = Long.class, 
+	  before = false)
 	int insert3(SysRole sysRole);
 	
-	@Update({"update sys_role",
-		     "set role_name = #{roleName},",
-				 "enabled = #{enabled},",
-				 "create_by = #{createBy},",
-				 "create_time = #{createTime, jdbcType=TIMESTAMP}",
-			 "where id = #{id}"
+	@Update({
+	  "update sys_role", 
+	  "set role_name = #{roleName}, enabled = #{enabled}, ", 
+	  "    create_by = #{createBy}, create_time = #{createTime, jdbcType=TIMESTAMP} ", 
+	  "where id = #{id}"
 		})
 	int updateById(SysRole sysRole);
 	
@@ -82,3 +97,4 @@ public interface RoleMapper {
 	List<SysRole> selectRoleByUserIdChoose(Long userId);
 	
 }
+

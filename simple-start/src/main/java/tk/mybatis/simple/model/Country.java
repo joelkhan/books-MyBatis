@@ -1,6 +1,8 @@
 package tk.mybatis.simple.model;
 
-/* 数据值对象 */
+/* 
+ * 定义一个数据值对象，即实体类
+ *  */
 public class Country {
 	private Long id;
 	private String countryname;
@@ -31,3 +33,4 @@ public class Country {
 	}
 
 }
+

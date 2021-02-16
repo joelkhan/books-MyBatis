@@ -135,6 +135,7 @@ public class UserMapperTest extends BaseMapperTest {
       System.out.printf("testInsert(): %d\n", result);
       // id 为 null，我们没有给 id 赋值，并且没有配置回写 id 的值
       Assert.assertNull(user.getId());
+      System.out.println("testInsert() no user id: " + user.getId());
     } finally {
       // 为了不影响数据库中的数据导致其他测试失败，这里选择回滚
       // 由于默认的 sqlSessionFactory.openSession() 是不自动提交的，
@@ -166,7 +167,7 @@ public class UserMapperTest extends BaseMapperTest {
       Assert.assertNotNull(user.getId());
       System.out.printf("user id: %d\n", user.getId());
     } finally {
-      // 这里使用commit主要用于验证
+      // 这里使用commit主要用于验证，会导致sys_user表的数据增长
       sqlSession.commit();
       // 不要忘记关闭 sqlSession
       sqlSession.close();

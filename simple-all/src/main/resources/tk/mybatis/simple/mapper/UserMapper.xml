@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 注意：命名空间 namespace 的值需要配置成接口的全限定名 
+     MyBatis 内部就是通过这个值将接口和 XML 关联起来的 -->
 <mapper namespace="tk.mybatis.simple.mapper.UserMapper">
 	<cache/>
 	<!-- <cache-ref namespace="tk.mybatis.simple.mapper.RoleMapper"/> -->
@@ -13,7 +15,7 @@
 		<result property="headImg" column="head_img" jdbcType="BLOB"/>
 		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
 	</resultMap>
-	
+    
 	<resultMap id="userRoleMap" extends="userMap" type="tk.mybatis.simple.model.SysUser">
 		<association property="role" columnPrefix="role_" resultMap="tk.mybatis.simple.mapper.RoleMapper.roleMap"/>
 	</resultMap>
@@ -113,11 +115,12 @@
 	    where u.id = #{user.id} and r.enabled = #{role.enabled}
 	</select>
 	
+	<!-- 为了防止类型错误，对于一些特殊的数据类型，建议指定具体的 jdbcType 值。例如“headImg”和“createTime” -->
 	<insert id="insert">
 		insert into sys_user(
-			user_name, user_password, user_email, user_info, head_img, create_time)
+			id, user_name, user_password, user_email, user_info, head_img, create_time)
 		values(
-			#{userName}, #{userPassword}, #{userEmail}, #{userInfo}, 
+			#{id}, #{userName}, #{userPassword}, #{userEmail}, #{userInfo}, 
 			#{headImg, jdbcType=BLOB}, #{createTime, jdbcType=TIMESTAMP})
 	</insert>
 	

@@ -40,6 +40,17 @@
         </environment>
     </environments>
 
+    <databaseIdProvider type="DB_VENDOR" >
+        <property name="SQL Server" value="sqlserver" />
+        <property name="DB2" value="db2" />
+        <property name="Oracle" value="oracle" />
+        <property name="MySQL" value="mysql"/>
+        <property name="PostgreSQL" value="postgresql" />
+        <property name="Derby" value="derby" />
+        <property name="HSQL" value="hsqldb" />
+        <property name="H2" value="h2" />
+    </databaseIdProvider>
+    
     <mappers>
         <package name="tk.mybatis.simple.mapper"/>
     </mappers>

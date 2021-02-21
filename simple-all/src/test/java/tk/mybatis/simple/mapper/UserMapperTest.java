@@ -175,7 +175,6 @@ public class UserMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testInsert2Selective() {
     SqlSession sqlSession = getSqlSession();
     try {
@@ -190,8 +189,8 @@ public class UserMapperTest extends BaseMapperTest {
       userMapper.insert2(user);
       // 获取插入的这条数据
       user = userMapper.selectById(user.getId());
-      Assert.assertEquals("test@mybatis.tk", user.getUserEmail());
-
+      Assert.assertEquals("mailbox_default@mybatis.tk", user.getUserEmail());
+      System.out.println("测试有选择性的insert2: " + user.getUserEmail());
     } finally {
       sqlSession.rollback();
       // 不要忘记关闭 sqlSession
@@ -269,7 +268,6 @@ public class UserMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testSelectByUser() {
     SqlSession sqlSession = getSqlSession();
     try {
@@ -279,11 +277,13 @@ public class UserMapperTest extends BaseMapperTest {
       query.setUserName("ad");
       List<SysUser> userList = userMapper.selectByUser(query);
       Assert.assertTrue(userList.size() > 0);
+      System.out.println("只查询用户名时，共: " + userList.size());
       // 只查询用户邮箱时
       query = new SysUser();
       query.setUserEmail("test@mybatis.tk");
       userList = userMapper.selectByUser(query);
       Assert.assertTrue(userList.size() > 0);
+      System.out.println("只查询用户邮箱时，共: " + userList.size());
       // 当同时查询用户名和邮箱时
       query = new SysUser();
       query.setUserName("ad");
@@ -291,32 +291,74 @@ public class UserMapperTest extends BaseMapperTest {
       userList = userMapper.selectByUser(query);
       // 由于没有同时符合这两个条件的用户，查询结果数为 0
       Assert.assertTrue(userList.size() == 0);
+      System.out.println("同时查询用户名和邮箱时，共: " + userList.size());
     } finally {
       // 不要忘记关闭 sqlSession
       sqlSession.close();
     }
   }
 
+  
   @Test
-  @Ignore
-  public void testSelectByIdOrUserName() {
+  public void testSelectByUser2() {
     SqlSession sqlSession = getSqlSession();
     try {
       UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
       // 只查询用户名时
       SysUser query = new SysUser();
+      query.setUserName("ad");
+      List<SysUser> userList = userMapper.selectByUser2(query);
+      Assert.assertTrue(userList.size() > 0);
+      System.out.println("只查询用户名时【testSelectByUser2】，共: " + userList.size());
+    } finally {
+      // 不要忘记关闭 sqlSession
+      sqlSession.close();
+    }
+  }
+
+  
+  @Test
+  public void testSelectByUser3() {
+    SqlSession sqlSession = getSqlSession();
+    try {
+      UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+      
+      SysUser query = new SysUser();
+      query.setUserName("ad");
+      query.setUserEmail("admin@mybatis.tk");
+      List<SysUser> userList = userMapper.selectByUser3(query);
+      
+      Assert.assertTrue(userList.size() == 1);
+      System.out.println("同时查询用户名和邮箱时【testSelectByUser3】，共: " + userList.size());
+    } finally {
+      // 不要忘记关闭 sqlSession
+      sqlSession.close();
+    }
+  }
+  
+  
+  @Test // 针对choose标签的测试
+  public void testSelectByIdOrUserName() {
+    SqlSession sqlSession = getSqlSession();
+    try {
+      UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+      // 同时赋值id和用户名时，因id判断在前，所以只针对id进行查询
+      SysUser query = new SysUser();
       query.setId(1L);
       query.setUserName("admin");
       SysUser user = userMapper.selectByIdOrUserName(query);
       Assert.assertNotNull(user);
-      // 当没有 id 时
+      System.out.println("测试choose标签，只针对id进行查询");
+      // 针对用户名进行查询
       query.setId(null);
       user = userMapper.selectByIdOrUserName(query);
       Assert.assertNotNull(user);
+      System.out.println("测试choose标签，针对用户名进行查询");
       // 当 id 和 name 都为空时
       query.setUserName(null);
       user = userMapper.selectByIdOrUserName(query);
       Assert.assertNull(user);
+      System.out.println("测试choose标签，当 id 和 name 都为空时");
     } finally {
       // 不要忘记关闭 sqlSession
       sqlSession.close();
@@ -324,12 +366,11 @@ public class UserMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testUpdateByIdSelective() {
     SqlSession sqlSession = getSqlSession();
     try {
       UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-      // 从数据库查询 1 个 user 对象
+
       SysUser user = new SysUser();
       // 更新 id = 1 的用户
       user.setId(1L);
@@ -344,6 +385,7 @@ public class UserMapperTest extends BaseMapperTest {
       // 修改后的名字保持不变，但是邮箱变成了新的
       Assert.assertEquals("admin", user.getUserName());
       Assert.assertEquals("test@mybatis.tk", user.getUserEmail());
+      System.out.println("有选择的update: " + user.getUserName() + ", " + user.getUserEmail());
     } finally {
       // 为了不影响数据库中的数据导致其他测试失败，这里选择回滚
       sqlSession.rollback();
@@ -353,7 +395,6 @@ public class UserMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testSelectByIdList() {
     SqlSession sqlSession = getSqlSession();
     try {
@@ -364,6 +405,7 @@ public class UserMapperTest extends BaseMapperTest {
       // 业务逻辑中必须校验 idList.size() > 0
       List<SysUser> userList = userMapper.selectByIdList(idList);
       Assert.assertEquals(2, userList.size());
+      System.out.println("测试foreach标签，testSelectByIdList：" + userList.size());
     } finally {
       // 不要忘记关闭 sqlSession
       sqlSession.close();
@@ -371,12 +413,11 @@ public class UserMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testInsertList() {
     SqlSession sqlSession = getSqlSession();
     try {
       UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-      // 创建一个 user 对象
+      // 创建一个list，包含2个 user 对象
       List<SysUser> userList = new ArrayList<SysUser>();
       for (int i = 0; i < 2; i++) {
         SysUser user = new SysUser();
@@ -389,7 +430,7 @@ public class UserMapperTest extends BaseMapperTest {
       int result = userMapper.insertList(userList);
       Assert.assertEquals(2, result);
       for (SysUser user : userList) {
-        System.out.println(user.getId());
+        System.out.println("测试foreach的批量插入：" + user.getId());
       }
     } finally {
       // 为了不影响数据库中的数据导致其他测试失败，这里选择回滚
@@ -400,21 +441,22 @@ public class UserMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testUpdateByMap() {
     SqlSession sqlSession = getSqlSession();
     try {
       UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-      // 从数据库查询 1 个 user 对象
+      
       Map<String, Object> map = new HashMap<String, Object>();
+      // 注意：id既是查询条件，也是更新字段，必须保证该值存在
       map.put("id", 1L);
       map.put("user_email", "test@mybatis.tk");
       map.put("user_password", "12345678");
       // 更新数据
-      userMapper.updateByMap(map);
+      int rst = userMapper.updateByMap(map);
       // 根据当前 id 查询修改后的数据
       SysUser user = userMapper.selectById(1L);
       Assert.assertEquals("test@mybatis.tk", user.getUserEmail());
+      System.out.println("测试foreach的testUpdateByMap： " + rst);
     } finally {
       // 为了不影响数据库中的数据导致其他测试失败，这里选择回滚
       sqlSession.rollback();

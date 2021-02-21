@@ -132,7 +132,6 @@ public class RoleMapperTest extends BaseMapperTest {
   }
 
   @Test
-  @Ignore
   public void testUpdateById() {
     // 获取 sqlSession
     SqlSession sqlSession = getSqlSession();
@@ -144,6 +143,9 @@ public class RoleMapperTest extends BaseMapperTest {
       Assert.assertEquals(Enabled.enabled, role.getEnabled());
       role.setEnabled(Enabled.disabled);
       roleMapper.updateById(role);
+      role = roleMapper.selectById(2L);
+      System.out.println("updated 'enabled' >>> " + role.getEnabled().getValue() + 
+          ", " + role.getEnabled());
     } finally {
       sqlSession.rollback();
       // 不要忘记关闭 sqlSession

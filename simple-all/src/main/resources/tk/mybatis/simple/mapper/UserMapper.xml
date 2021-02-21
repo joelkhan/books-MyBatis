@@ -131,18 +131,14 @@
 	<insert id="insert2" useGeneratedKeys="true" keyProperty="id">
 		insert into sys_user(
 			user_name, user_password, 
-			<if test="userEmail != null">
-				<if test="userEmail != ''">
-				    user_email, 
-				</if>
+			<if test="userEmail != null and userEmail != ''">
+                user_email, 
 			</if>
 			user_info, head_img, create_time)
 		values(
 			#{userName}, #{userPassword}, 
-			<if test="userEmail != null">
-				<if test="userEmail != ''">
-				    #{userEmail}, 
-				</if>
+			<if test="userEmail != null and userEmail != ''">
+                #{userEmail}, 
 			</if>
 			#{userInfo}, #{headImg, jdbcType=BLOB}, #{createTime, jdbcType=TIMESTAMP})
 	</insert>
@@ -200,18 +196,61 @@
 	        head_img headImg,
 	        create_time createTime
 	    from sys_user
-	    <where>
-		    <if test="@tk.mybatis.util.StringUtil@isNotEmpty(userName)">
-			    and user_name like concat('%', #{userName}, '%')
+	    <where> <!-- 注意：这里使用的是where标签，不是where从句 -->
+		    <if test="@tk.mybatis.util.StringUtil@isNotEmpty(userName)"> <!-- OGNL用法 -->
+		      <!-- 把字符串的拼接移到bind中，可以避免不同数据库之间的语法差异 -->
+		      <bind name="userNameLike" value="'%' + userName + '%'"/>
+                <!-- and user_name like concat('%', #{userName}, '%') -->
+                and user_name like #{userNameLike}
 		    </if>
 		    <if test="userEmail != '' and userEmail != null">
-		    and user_email = #{userEmail}
+		        and user_email = #{userEmail}
 		    </if>
 	    </where>
 	</select>
 	
+	 
+	<select id="selectByUser2" databaseId="mysql" 
+	        resultType="tk.mybatis.simple.model.SysUser">
+	    select * 
+	    from sys_user 
+	    where user_name like concat('%', #{userName}, '%')
+	</select>
+	
+    <select id="selectByUser2" databaseId="oracle" 
+            resultType="tk.mybatis.simple.model.SysUser">
+        select * 
+        from sys_user 
+        where user_name like '%'||#{userName}||'%'
+    </select>
+
+
+    <select id="selectByUser3" resultType="tk.mybatis.simple.model.SysUser" >
+        select id,
+               user_name userName,
+               user_password userPassword,
+               user_email userEmail,
+               user_info userInfo,
+               head_img headImg,
+               create_time createTime
+        from sys_user
+        <where>
+            <if test= "userName != null and userName != ''">
+                <if test="_databaseId == 'mysql'">
+                    and user_name like concat('%', #{userName}, '%')
+                </if>
+                <if test="_databaseId == 'oracle'">
+                    and user_name like '%'||#{userName}||'%'
+                </if>
+            </if>
+            <if test="userEmail != '' and userEmail != null" >
+                and user_email = #{userEmail}
+            </if>
+        </where>
+    </select>
+	
 	<update id="updateByIdSelective">
-	<bind name="print" value="@tk.mybatis.util.StringUtil@print(_parameter)"/>
+	  <bind name="print" value="@tk.mybatis.util.StringUtil@print(_parameter)"/>
 		update sys_user 
 		<set>
 			<if test="userName != null and userName != ''">
@@ -249,13 +288,17 @@
 	    where 1 = 1
 		<choose>
 			<when test="id != null">
-			and id = #{id}
+			    and id = #{id}
 			</when>
 			<when test="userName != null and userName != ''">
-			and user_name = #{userName}
+			    and user_name = #{userName}
 			</when>
-			<otherwise>
-			limit 0
+			<otherwise> 
+			<!-- 当when定义的所有条件都不成立时，查询结果会有多条（因为where 1=1），
+			     这种情况与接口定义不一致（接口定义的返回值为SysUser），从而产生报错。
+			     使用limit 0可以避免这种情况，书中原文示例使用的是“and 1 = 2”，作用是相同的，
+			     但应该是“and 1 = 2”更好些，where条件为假，可以减少一次DB的查询操作。 -->
+			    limit 0
 			</otherwise>
 		</choose>
 	</select>
@@ -275,15 +318,18 @@
     	</foreach>
 	</select>
 	
+	<!-- 从 MyBatis 3.3.l 版本开始，MyBatis开始支持批量新增回写主键值的功能（该功能由本书作者提交） ， 
+	     这个功能首先要求数据库主键值为自增类型，同时还要求该数据库提供的JDBC驱动可以支持返回批量插入的主键值（JDBC提供了接口，
+	     但并不是所有数据库都完美实现了该接口），因此到目前为止，可以完美支持该功能的仅有 MySQL 数据库。 -->
 	<insert id="insertList" useGeneratedKeys="true" keyProperty="id">
-		insert into sys_user(
-			user_name, user_password,user_email,
-			user_info, head_img, create_time)
+		insert into sys_user ( 
+		    user_name, user_password, user_email, user_info, 
+		    head_img, create_time) 
 		values
 		<foreach collection="list" item="user" separator=",">
-			(
-			#{user.userName}, #{user.userPassword},#{user.userEmail},
-			#{user.userInfo}, #{user.headImg, jdbcType=BLOB}, #{user.createTime, jdbcType=TIMESTAMP})
+		    ( 
+		    #{user.userName}, #{user.userPassword}, #{user.userEmail}, #{user.userInfo}, 
+			#{user.headImg, jdbcType=BLOB}, #{user.createTime, jdbcType=TIMESTAMP} )
 		</foreach>
 	</insert>
 	
@@ -291,9 +337,9 @@
 		update sys_user 
 		set 
 		<foreach collection="_parameter" item="val" index="key" separator=",">
-			${key} = #{val}
+		    ${key} = #{val} <!-- 注意：key是"${}"的形式！ -->
 		</foreach>
-		where id = #{id}
+		where id = #{id} <!-- 注意：id既是查询条件，也是更新字段，必须保证该值存在 -->
 	</update>
 	
 	<select id="selectUserAndRoleById" resultType="tk.mybatis.simple.model.SysUser">

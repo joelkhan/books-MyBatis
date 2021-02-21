@@ -20,7 +20,7 @@ public class MyMapperProxyTest extends BaseMapperTest {
     MyMapperProxy userMapperProxy = new MyMapperProxy(UserMapper.class, sqlSession);
     UserMapper userMapper = (UserMapper) Proxy.newProxyInstance(
         Thread.currentThread().getContextClassLoader(),
-        new Class[] { UserMapper.class }, 
+        new Class[] { UserMapper.class },
         userMapperProxy);
     // 调用 selectAll 方法
     List<SysUser> user = userMapper.selectAll();

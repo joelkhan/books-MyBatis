@@ -19,7 +19,10 @@ import tk.mybatis.simple.model.SysRole;
 /*
  * RoleMapper接口主要演示了MyBatis注解方式的基本用法。
  * 这种方式的优点是，对于需求比较简单的系统，效率较高。
- * 缺点是，当 SQL 有变化时都需要重新编译代码，因此，一般情况下不建议使用注解方式。 
+ * 但是， 
+ * 由于注解方式写在代码中，SQL语句较长时，需要手动拼接字符串，
+ * 当SQL变动时，需要重新编译代码，不方便维护。
+ * 因此，一般情况下不建议使用注解方式（包括@Provider注解）。 
  * */
 @CacheNamespaceRef(RoleMapper.class)
 public interface RoleMapper {

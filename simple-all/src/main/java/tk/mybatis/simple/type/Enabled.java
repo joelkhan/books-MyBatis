@@ -1,5 +1,8 @@
 package tk.mybatis.simple.type;
 
+/*
+ * 一个枚举类型
+ * */
 public enum Enabled {
 	enabled(1),   // 启用
 	disabled(0);  // 禁用

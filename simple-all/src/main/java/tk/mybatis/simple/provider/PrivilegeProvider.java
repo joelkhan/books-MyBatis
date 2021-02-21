@@ -5,12 +5,12 @@ import org.apache.ibatis.jdbc.SQL;
 import tk.mybatis.simple.model.SysPrivilege;
 
 /**
- * 权限Mapper对应的Provider实现
+ * Provider实现，对应 PrivilegeMapper 接口
  */
 public class PrivilegeProvider {
 	
-	public String selectById(final Long id){
-		return new SQL(){
+	public String selectById(final Long id) {
+		return new SQL() {
 			{
 				SELECT("id, privilege_name, privilege_url");
 				FROM("sys_privilege");
@@ -75,4 +75,6 @@ public class PrivilegeProvider {
 			}
 		}.toString();
 	}
+
 }
+

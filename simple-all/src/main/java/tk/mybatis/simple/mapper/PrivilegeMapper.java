@@ -15,7 +15,7 @@ import tk.mybatis.simple.model.SysPrivilege;
 import tk.mybatis.simple.provider.PrivilegeProvider;
 
 /*
- * PrivilegeMapper接口主要演示了Provider 注解方式的基本用法 。
+ * PrivilegeMapper接口，主要演示了 @Provider 注解方式的基本用法。
  * */
 @CacheNamespace
 public interface PrivilegeMapper {

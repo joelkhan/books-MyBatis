@@ -108,9 +108,14 @@ public interface UserMapper {
    * @return
    */
   List<SysUser> selectByUser(SysUser sysUser);
+  
+  // 多数据库支持用法示例1：<databaseIdProvider> 
+  List<SysUser> selectByUser2(SysUser sysUser);
+  // 多数据库支持用法示例2：<databaseIdProvider> 
+  List<SysUser> selectByUser3(SysUser sysUser);
 
   /**
-   * 根据主键更新
+   * 根据主键更新，只更新有变化的字段，即有选择的（Selective）更新
    * 
    * @param sysUser
    * @return
@@ -119,7 +124,7 @@ public interface UserMapper {
 
   /**
    * 根据用户 id 或用户名查询
-   * 
+   * 使用choose标签的示例
    * @param sysUser
    * @return
    */
@@ -127,7 +132,7 @@ public interface UserMapper {
 
   /**
    * 根据用户 id 集合查询
-   * 
+   * 使用foreach标签的示例
    * @param idList
    * @return
    */

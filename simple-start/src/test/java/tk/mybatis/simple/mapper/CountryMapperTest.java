@@ -8,13 +8,15 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tk.mybatis.simple.model.Country;
 
 public class CountryMapperTest {
-
+  private static Logger logger = Logger.getLogger(CountryMapperTest.class);
+  
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeClass
@@ -41,6 +43,8 @@ public class CountryMapperTest {
 
   private void printCountryList(List<Country> countryList) {
     for (Country country : countryList) {
+      // 使用logger输出日志
+      logger.info("one line country name: " + country.getCountryname());
       System.out.printf("%-4d%-8s%4s\n", 
         country.getId(), country.getCountryname(), country.getCountrycode());
     }
